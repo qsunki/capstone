@@ -5,20 +5,20 @@ import 'env/env.dart';
 
 
 void main() {
-  OpenAI.apiKey = Env.apiKey;
-  Stream<OpenAIStreamChatCompletionModel> chatStream = OpenAI.instance.chat.createStream(
-    model: "gpt-3.5-turbo",
-    messages: [
-      const OpenAIChatCompletionChoiceMessageModel(
-        content: "hello",
-        role: OpenAIChatMessageRole.user,
-      )
-    ],
-  );
-
-  chatStream.listen((chatStreamEvent) {
-    print(chatStreamEvent.choices[0].delta.content); // ...
-  });
+  // OpenAI.apiKey = Env.apiKey;
+  // Stream<OpenAIStreamChatCompletionModel> chatStream = OpenAI.instance.chat.createStream(
+  //   model: "gpt-3.5-turbo",
+  //   messages: [
+  //     const OpenAIChatCompletionChoiceMessageModel(
+  //       content: "hello",
+  //       role: OpenAIChatMessageRole.user,
+  //     )
+  //   ],
+  // );
+  //
+  // chatStream.listen((chatStreamEvent) {
+  //   print(chatStreamEvent.choices[0].delta.content); // ...
+  // });
   runApp(const MyApp());
 }
 
@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -62,25 +63,28 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: ListView.builder(
+        itemCount: 10,
+        shrinkWrap: true,
+        padding: EdgeInsets.only(top: 10),
+        // physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return Container(
+            padding: EdgeInsets.only(left: 14, right: 14, top: 8),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.blue[200],
+                ),
+                padding: EdgeInsets.all(12),
+                child: Text('This is a message.'),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          );
+        },
+      )
     );
   }
 }
