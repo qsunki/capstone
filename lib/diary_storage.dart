@@ -20,7 +20,7 @@ class DiaryStorage {
   Future<File> get _localFile async {
     final path = await _localPath;
     return File(
-        '$path\\${dateTime.year}-${dateTime.month}-${dateTime.day}.json');
+        '$path\\Aiary\\${dateTime.year}-${dateTime.month}-${dateTime.day}.json');
   }
 
   Future<DiaryModel> readDiary() async {

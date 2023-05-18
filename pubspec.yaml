@@ -38,6 +38,8 @@ dependencies:
   dart_openai: ^1.9.6
   envied: ^0.3.0
   path_provider: ^2.0.15
+  flutter_speed_dial: ^6.2.0
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:

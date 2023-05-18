@@ -2,6 +2,8 @@ import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_openai/chat.dart';
 import 'package:flutter_openai/diary_storage.dart';
+import 'package:flutter_openai/diary_write.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'calendar.dart';
 import 'setting.dart';
@@ -50,7 +52,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   static const _widgetOptions = <Widget>[
     Calendar(),
     Summary(),
@@ -71,18 +73,37 @@ class _HomeState extends State<Home> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       floatingActionButton: _selectedIndex < 2
-          ? FloatingActionButton(
-              child: Icon(Icons.chat_bubble),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Chat(
-                      diaryStorage: DiaryStorage(dateTime: DateTime.now()),
-                    ),
-                  ),
-                );
-              },
+          ? SpeedDial(
+              icon: Icons.add,
+              renderOverlay: false,
+              children: [
+                SpeedDialChild(
+                  child: Icon(Icons.chat_bubble),
+                  backgroundColor: Colors.blue[400],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Chat(
+                          diaryStorage: DiaryStorage(dateTime: DateTime.now()),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.note_add),
+                  backgroundColor: Colors.blue[400],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DiaryWrite(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(

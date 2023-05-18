@@ -69,15 +69,13 @@ class _ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Flutter Chat'),
+          title: Text('${_diaryModel.dateTime.year}-${_diaryModel.dateTime.month}-${_diaryModel.dateTime.day}'),
         ),
         body: Column(
           children: [
             Flexible(
               child: ListView.builder(
                 itemCount: _diaryModel.chatLogs.length,
-                // shrinkWrap: true,
-                // reverse: true,
                 padding: EdgeInsets.only(top: 10),
                 itemBuilder: (context, index) {
                   return Container(
