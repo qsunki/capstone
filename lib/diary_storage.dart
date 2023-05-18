@@ -20,14 +20,18 @@ class DiaryStorage {
   Future<File> get _localFile async {
     final path = await _localPath;
     return File(
-        '$path\\Aiary\\${dateTime.year}-${dateTime.month}-${dateTime.day}.json');
+        '$path/${dateTime.year}-${dateTime.month}-${dateTime.day}.json');
   }
 
   Future<DiaryModel> readDiary() async {
-    final file = await _localFile;
-    final contents = await file.readAsString();
-    final json = jsonDecode(contents);
-    return DiaryModel.fromJson(json);
+    try {
+      final file = await _localFile;
+      final contents = await file.readAsString();
+      final json = jsonDecode(contents);
+      return DiaryModel.fromJson(json);
+    } catch (e) {
+      return DiaryModel('', '', dateTime, []);
+    }
   }
 
   Future<File> writeDiary(DiaryModel diaryModel) async {

@@ -45,5 +45,6 @@ app.*.map.json
 
 #
 .env
+/lib/env/env.g.dart
 /windows
 /macos
