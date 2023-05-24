@@ -10,21 +10,9 @@ import 'setting.dart';
 import 'summary.dart';
 import 'env/env.dart';
 
+
 void main() {
   OpenAI.apiKey = Env.apiKey;
-  // Stream<OpenAIStreamChatCompletionModel> chatStream = OpenAI.instance.chat.createStream(
-  //   model: "gpt-3.5-turbo",
-  //   messages: [
-  //     const OpenAIChatCompletionChoiceMessageModel(
-  //       content: "hello",
-  //       role: OpenAIChatMessageRole.user,
-  //     )
-  //   ],
-  // );
-  //
-  // chatStream.listen((chatStreamEvent) {
-  //   print(chatStreamEvent.choices[0].delta.content);
-  // });
   runApp(const MyApp());
 }
 
@@ -98,7 +86,9 @@ class _HomeState extends State<Home> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DiaryWrite(),
+                        builder: (context) => DiaryWrite(
+                          diaryStorage: DiaryStorage(dateTime: DateTime.now()),
+                        ),
                       ),
                     );
                   },
@@ -112,7 +102,7 @@ class _HomeState extends State<Home> {
               icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(
               icon: Icon(Icons.summarize), label: 'Summary'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
+          // BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],

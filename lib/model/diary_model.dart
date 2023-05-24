@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DiaryModel {
-  final String content;
-  final String summary;
+  String content;
+  String summary;
   final DateTime dateTime;
   List<Map<String, dynamic>> chatLogs;
 
@@ -20,4 +20,5 @@ class DiaryModel {
     'dateTime': dateTime.toString(),
     'chatLogs': chatLogs,
   };
+
 }

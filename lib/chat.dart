@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_openai/diary_storage.dart';
 import 'package:flutter_openai/model/diary_model.dart';
 
+import 'diary_write.dart';
+
 class Chat extends StatefulWidget {
   const Chat({super.key, required this.diaryStorage});
 
@@ -13,7 +15,7 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-  late DiaryModel _diaryModel = DiaryModel('', '', DateTime.now(), []);
+  DiaryModel _diaryModel = DiaryModel('', '', DateTime.now(), []);
   final TextEditingController _textController = TextEditingController();
   final _promptModel = OpenAIChatCompletionChoiceMessageModel(
     role: OpenAIChatMessageRole.system,
@@ -69,7 +71,22 @@ class _ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('${_diaryModel.dateTime.year}-${_diaryModel.dateTime.month}-${_diaryModel.dateTime.day}'),
+          title: Text(
+              '${_diaryModel.dateTime.year}-${_diaryModel.dateTime.month}-${_diaryModel.dateTime.day}'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DiaryWrite(
+                        diaryStorage: DiaryStorage(dateTime: _diaryModel.dateTime),
+                      ),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.edit_document)),
+          ],
         ),
         body: Column(
           children: [

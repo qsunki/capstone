@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter_openai/model/diary_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +10,15 @@ class DiaryStorage {
 
   DiaryStorage({required this.dateTime});
 
+  static Future<List<DiaryModel>> readDiaries() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = '${directory.path}/Aiary';
+    final dir = Directory(path);
+    var listSync = dir.listSync();
+    var map = listSync.map((e) => (e as File).readAsStringSync()).map(jsonDecode).map((e) => DiaryModel.fromJson(e)).toList();
+    return map;
+  }
+
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
 
@@ -20,7 +28,7 @@ class DiaryStorage {
   Future<File> get _localFile async {
     final path = await _localPath;
     return File(
-        '$path/${dateTime.year}-${dateTime.month}-${dateTime.day}.json');
+        '$path/Aiary/${dateTime.year}-${dateTime.month}-${dateTime.day}.json');
   }
 
   Future<DiaryModel> readDiary() async {
