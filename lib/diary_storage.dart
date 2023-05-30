@@ -14,6 +14,7 @@ class DiaryStorage {
     final directory = await getApplicationDocumentsDirectory();
     final path = '${directory.path}/Aiary';
     final dir = Directory(path);
+    if (!dir.existsSync()) dir.createSync();
     var listSync = dir.listSync();
     var map = listSync.map((e) => (e as File).readAsStringSync()).map(jsonDecode).map((e) => DiaryModel.fromJson(e)).toList();
     return map;
@@ -27,6 +28,8 @@ class DiaryStorage {
 
   Future<File> get _localFile async {
     final path = await _localPath;
+    Directory aiary = Directory('$path/Aiary');
+    if (!aiary.existsSync()) aiary.createSync();
     return File(
         '$path/Aiary/${dateTime.year}-${dateTime.month}-${dateTime.day}.json');
   }

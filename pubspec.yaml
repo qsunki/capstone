@@ -40,10 +40,14 @@ dependencies:
   path_provider: ^2.0.15
   flutter_speed_dial: ^6.2.0
   table_calendar: ^3.0.9
+  graphql: ^5.1.2
+  web_socket_channel: 2.2.0
+  http: ^0.13.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

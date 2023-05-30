@@ -1,15 +1,13 @@
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_openai/chat.dart';
+import 'package:flutter_openai/chatWithMe.dart';
 import 'package:flutter_openai/diary_storage.dart';
-import 'package:flutter_openai/diary_write.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'calendar.dart';
 import 'setting.dart';
-import 'summary.dart';
+import 'lists.dart';
 import 'env/env.dart';
-
 
 void main() {
   OpenAI.apiKey = Env.apiKey;
@@ -43,7 +41,7 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 1;
   static const _widgetOptions = <Widget>[
     Calendar(),
-    Summary(),
+    Lists(),
     Setting(),
   ];
 
@@ -56,52 +54,37 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('AIARY')),
+      appBar: AppBar(
+        title: Text('AIARY'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Chat(
+                              diaryStorage:
+                                  DiaryStorage(dateTime: DateTime.now()),
+                            )));
+              },
+              icon: Icon(Icons.add)),
+        ],
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      floatingActionButton: _selectedIndex < 2
-          ? SpeedDial(
-              icon: Icons.add,
-              renderOverlay: false,
-              children: [
-                SpeedDialChild(
-                  child: Icon(Icons.chat_bubble),
-                  backgroundColor: Colors.blue[400],
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Chat(
-                          diaryStorage: DiaryStorage(dateTime: DateTime.now()),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                SpeedDialChild(
-                  child: Icon(Icons.note_add),
-                  backgroundColor: Colors.blue[400],
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DiaryWrite(
-                          diaryStorage: DiaryStorage(dateTime: DateTime.now()),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => ChatWithMe()));
+          },
+          child: Icon(Icons.chat)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_month), label: 'Calendar'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.summarize), label: 'Summary'),
+          BottomNavigationBarItem(icon: Icon(Icons.summarize), label: 'Lists'),
           // BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
         ],
         currentIndex: _selectedIndex,
