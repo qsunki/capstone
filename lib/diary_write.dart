@@ -89,18 +89,26 @@ class _DiaryWriteState extends State<DiaryWrite> {
         title: Text('일기 쓰기'),
         actions: [
           IconButton(
-              onPressed: () async {
-                OpenAIChatCompletionModel chatCompletion = await OpenAI
+              onPressed: () {
+                var sb = StringBuffer();
+                Stream<OpenAIStreamChatCompletionModel> chatStream = OpenAI
                     .instance.chat
-                    .create(model: "gpt-3.5-turbo", messages: [
+                    .createStream(model: "gpt-3.5-turbo", messages: [
                   _promptModel,
                   OpenAIChatCompletionChoiceMessageModel(
                     role: OpenAIChatMessageRole.user,
                     content: _diaryModel.chatLogs.toString(),
                   )
                 ]);
-                _textEditingController.text =
-                    chatCompletion.choices[0].message.content;
+                chatStream.listen((chatStreamEvent) {
+                  var s = chatStreamEvent.choices[0].delta.content;
+                  if (s != null) {
+                    sb.write(s);
+                    _textEditingController.text = sb.toString();
+                  }
+                });
+                // _textEditingController.text =
+                //     chatCompletion.choices[0].message.content;
               },
               icon: Icon(Icons.create)),
           SizedBox(
@@ -118,7 +126,8 @@ class _DiaryWriteState extends State<DiaryWrite> {
                     content: _diaryModel.content,
                   )
                 ]);
-                _diaryModel.summary = summaryCompletion.choices[0].message.content;
+                _diaryModel.summary =
+                    summaryCompletion.choices[0].message.content;
                 diaryToDB();
                 widget.diaryStorage.writeDiary(_diaryModel);
               },
