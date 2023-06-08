@@ -1,13 +1,11 @@
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_openai/chat.dart';
-import 'package:flutter_openai/chatWithMe.dart';
-import 'package:flutter_openai/diary_storage.dart';
-
-import 'calendar.dart';
-import 'setting.dart';
-import 'lists.dart';
-import 'env/env.dart';
+import 'package:flutter_openai/app_provider.dart';
+import 'package:flutter_openai/view/chat_daily.dart';
+import 'package:flutter_openai/view/chat_diary.dart';
+import 'package:flutter_openai/view/diary_write.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_openai/env/env.dart';
 
 void main() {
   OpenAI.apiKey = Env.apiKey;
@@ -19,37 +17,41 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'AIARY',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider<AppProv>(
+      create: (context) => AppProv(),
+      child: MaterialApp(
+        title: 'AIARY',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Home(),
+        debugShowCheckedModeBanner: false,
+        routes: {
+          'chat_diary': (_) => ChatDiary(),
+        },
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case 'chat_daily':
+              return MaterialPageRoute(
+                builder: (context) => ChatDaily(
+                  dateTime: settings.arguments as DateTime,
+                ),
+              );
+            case 'chat_write':
+              return MaterialPageRoute(
+                  builder: (context) => DiaryWrite(
+                        dateTime: settings.arguments as DateTime,
+                      ));
+          }
+          return null;
+        },
       ),
-      home: Home(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class Home extends StatefulWidget {
+class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  int _selectedIndex = 1;
-  static const _widgetOptions = <Widget>[
-    Calendar(),
-    Lists(),
-    Setting(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,26 +60,16 @@ class _HomeState extends State<Home> {
         title: Text('AIARY'),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Chat(
-                              diaryStorage:
-                                  DiaryStorage(dateTime: DateTime.now()),
-                            )));
-              },
+              onPressed: () => Navigator.pushNamed(context, 'chat_daily',
+                  arguments: DateTime.now()),
               icon: Icon(Icons.add)),
         ],
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: context.watch<AppProv>().selectedWidget,
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ChatWithMe()));
-          },
+          onPressed: () => Navigator.pushNamed(context, 'chat_diary'),
           child: Icon(Icons.chat)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
@@ -85,11 +77,10 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.summarize), label: 'Lists'),
-          // BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: context.watch<AppProv>().index,
         selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
+        onTap: (index) => context.read<AppProv>().index = index,
       ),
     );
   }

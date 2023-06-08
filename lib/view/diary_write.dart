@@ -3,52 +3,34 @@ import 'dart:developer';
 
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_openai/model/diary_model.dart';
+import 'package:flutter_openai/app_provider.dart';
+import 'package:flutter_openai/domain/diary.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-import 'diary_storage.dart';
+class DiaryWrite extends StatelessWidget {
+  final TextEditingController textEditingController = TextEditingController();
+  final DateTime dateTime;
 
-class DiaryWrite extends StatefulWidget {
-  const DiaryWrite({Key? key, required this.diaryStorage}) : super(key: key);
+  DiaryWrite({Key? key, required this.dateTime}) : super(key: key);
 
-  final DiaryStorage diaryStorage;
-
-  @override
-  State<DiaryWrite> createState() => _DiaryWriteState();
-}
-
-class _DiaryWriteState extends State<DiaryWrite> {
-  final TextEditingController _textEditingController = TextEditingController();
-  late DiaryModel _diaryModel = DiaryModel('', '', DateTime.now(), []);
-
-  final _promptModel = OpenAIChatCompletionChoiceMessageModel(
+  final promptModel = OpenAIChatCompletionChoiceMessageModel(
     role: OpenAIChatMessageRole.system,
     content: '아래는 user가 일기를 쓰는 데 바탕이 될 대화야. 이것을 바탕으로 일기를 작성해줘',
   );
 
-  final _summaryPromptModel = OpenAIChatCompletionChoiceMessageModel(
+  final summaryPromptModel = OpenAIChatCompletionChoiceMessageModel(
     role: OpenAIChatMessageRole.system,
     content: '입력은 사용자의 일기야. 이것을 5문장 이내로 요약해줘.',
   );
 
-  @override
-  void initState() {
-    super.initState();
-    widget.diaryStorage.readDiary().then((value) {
-      setState(() {
-        _diaryModel = value;
-        _textEditingController.text = _diaryModel.content;
-      });
-    });
-  }
-
-  Future<void> diaryToDB() async {
+  Future<void> diaryToDB(Diary diary) async {
     OpenAIEmbeddingsModel embeddings = await OpenAI.instance.embedding.create(
       model: "text-embedding-ada-002",
-      input: _diaryModel.content,
+      input: diary.content,
     );
     var date =
-        "${_diaryModel.dateTime.year}년${_diaryModel.dateTime.month}월${_diaryModel.dateTime.day}일 ";
+        "${diary.dateTime.year}년${diary.dateTime.month}월${diary.dateTime.day}일 ";
     final vector = embeddings.data[0].embeddings;
     var url = Uri.parse(
         'https://my-test-db-yr9cmy7h.weaviate.network/v1/batch/objects?consistency_level=ALL');
@@ -56,7 +38,7 @@ class _DiaryWriteState extends State<DiaryWrite> {
       "objects": [
         {
           "class": "Diary",
-          "properties": {"content": date + _diaryModel.content},
+          "properties": {"content": date + diary.content},
           "vector": vector
         }
       ]
@@ -75,14 +57,6 @@ class _DiaryWriteState extends State<DiaryWrite> {
   }
 
   @override
-  void dispose() {
-    _diaryModel.content = _textEditingController.text;
-    widget.diaryStorage.writeDiary(_diaryModel);
-    _textEditingController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -90,25 +64,24 @@ class _DiaryWriteState extends State<DiaryWrite> {
         actions: [
           IconButton(
               onPressed: () {
+                var diary = context.read<Diary>();
                 var sb = StringBuffer();
                 Stream<OpenAIStreamChatCompletionModel> chatStream = OpenAI
                     .instance.chat
                     .createStream(model: "gpt-3.5-turbo", messages: [
-                  _promptModel,
+                  promptModel,
                   OpenAIChatCompletionChoiceMessageModel(
                     role: OpenAIChatMessageRole.user,
-                    content: _diaryModel.chatLogs.toString(),
+                    content: diary.chatLogs.toString(),
                   )
                 ]);
                 chatStream.listen((chatStreamEvent) {
                   var s = chatStreamEvent.choices[0].delta.content;
                   if (s != null) {
                     sb.write(s);
-                    _textEditingController.text = sb.toString();
+                    textEditingController.text = sb.toString();
                   }
                 });
-                // _textEditingController.text =
-                //     chatCompletion.choices[0].message.content;
               },
               icon: Icon(Icons.create)),
           SizedBox(
@@ -116,20 +89,22 @@ class _DiaryWriteState extends State<DiaryWrite> {
           ),
           IconButton(
               onPressed: () async {
-                _diaryModel.content = _textEditingController.text;
+                var diary = context.read<Diary>();
+                diary.content = textEditingController.text;
                 OpenAIChatCompletionModel summaryCompletion = await OpenAI
                     .instance.chat
                     .create(model: "gpt-3.5-turbo", messages: [
-                  _summaryPromptModel,
+                  summaryPromptModel,
                   OpenAIChatCompletionChoiceMessageModel(
                     role: OpenAIChatMessageRole.user,
-                    content: _diaryModel.content,
+                    content: diary.content,
                   )
                 ]);
-                _diaryModel.summary =
-                    summaryCompletion.choices[0].message.content;
-                diaryToDB();
-                widget.diaryStorage.writeDiary(_diaryModel);
+                diary.summary = summaryCompletion.choices[0].message.content;
+                diaryToDB(diary);
+                if (context.mounted) {
+                  context.read<AppProv>().diaryRepo.writeDiary(diary);
+                }
               },
               icon: Icon(Icons.check)),
         ],
@@ -137,7 +112,7 @@ class _DiaryWriteState extends State<DiaryWrite> {
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: TextField(
-          controller: _textEditingController,
+          controller: textEditingController,
           // decoration: InputDecoration(
           //   hintText: 'Enter text...',
           // ),
