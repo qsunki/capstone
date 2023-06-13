@@ -35,7 +35,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  dart_openai: ^1.9.6
+  dart_openai: ^2.0.1
   envied: ^0.3.0
   path_provider: ^2.0.15
   flutter_speed_dial: ^6.2.0
@@ -57,7 +57,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   envied_generator: ^0.3.0
   build_runner: ^2.3.3
-
+  #env: ^
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -85,7 +85,36 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+    - family: Jalnan
+      fonts:
+       - asset: assets/fonts/JalnanOTF.otf
+         style: italic
+    - family: Bmeul
+      fonts:
+        - asset: assets/fonts/BMEULJIRO.otf
+          style: italic
+
+    - family: SUIT
+      fonts:
+        - asset: assets/fonts/SUIT-Heavy.otf
+          weight: 900
+        - asset: assets/fonts/SUIT-ExtraBold.otf
+          weight: 800
+        - asset: assets/fonts/SUIT-Bold.otf
+          weight: 700
+        - asset: assets/fonts/SUIT-SemiBold.otf
+          weight: 600
+        - asset: assets/fonts/SUIT-Medium.otf
+          weight: 500
+        - asset: assets/fonts/SUIT-Regular.otf
+          weight: 400
+        - asset: assets/fonts/SUIT-Light.otf
+          weight: 300
+        - asset: assets/fonts/SUIT-ExtraLight.otf
+          weight: 200
+        - asset: assets/fonts/SUIT-Thin.otf
+          weight: 100
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

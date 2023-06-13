@@ -2,7 +2,7 @@
 // import 'package:flutter_openai/env/env.dart';
 import 'dart:convert';
 
-import 'package:dart_openai/openai.dart';
+import 'package:dart_openai/dart_openai.dart';
 import 'package:graphql/client.dart';
 
 

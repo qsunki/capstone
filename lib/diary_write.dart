@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:dart_openai/openai.dart';
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_openai/model/diary_model.dart';
 import 'package:http/http.dart' as http;

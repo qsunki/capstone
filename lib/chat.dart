@@ -1,4 +1,4 @@
-import 'package:dart_openai/openai.dart';
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_openai/diary_storage.dart';
 import 'package:flutter_openai/model/diary_model.dart';
@@ -121,8 +121,8 @@ class _ChatState extends State<Chat> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
                           color: _diaryModel.chatLogs[index]['role'] == 'user'
-                              ? Colors.blue[200]
-                              : Colors.red[100],
+                              ? Color(0xFFDAE8FA)
+                              : Color(0xFFFDF1D8),
                         ),
                         padding: EdgeInsets.all(12),
                         child: Text(_diaryModel.chatLogs[index]['content']),

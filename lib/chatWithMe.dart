@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_openai/openai.dart';
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
 import 'package:path_provider/path_provider.dart';
@@ -146,8 +146,8 @@ class _ChatWithMeState extends State<ChatWithMe> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
                           color: chatLogs[index]['role'] == 'user'
-                              ? Colors.blue[200]
-                              : Colors.red[100],
+                              ? Color(0xFFDAE8FA)
+                              : Color(0xFFFDF1D8),
                         ),
                         padding: EdgeInsets.all(12),
                         child: Text(chatLogs[index]['content']),
