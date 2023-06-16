@@ -51,7 +51,7 @@ class _DiaryWriteState extends State<DiaryWrite> {
         "${_diaryModel.dateTime.year}년${_diaryModel.dateTime.month}월${_diaryModel.dateTime.day}일 ";
     final vector = embeddings.data[0].embeddings;
     var url = Uri.parse(
-        'https://my-test-db-yr9cmy7h.weaviate.network/v1/batch/objects?consistency_level=ALL');
+        'https://my-capstone-f9fj7zjf.weaviate.network/v1/batch/objects?consistency_level=ALL');
     var data = {
       "objects": [
         {

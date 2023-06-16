@@ -19,8 +19,17 @@ class _ChatState extends State<Chat> {
   final TextEditingController _textController = TextEditingController();
   final _promptModel = OpenAIChatCompletionChoiceMessageModel(
     role: OpenAIChatMessageRole.system,
-    content:
-        '나는 일기를 쓰려고 하고 있어. 우리는 하루를 마무리하며 대화 중이야. 너는 내가 일기를 잘 쓸 수 있도록 유도하는 질문을 하고 내가 감정을 잘 드러내도록 해줘. 너는 나의 가장 친한 친구같은 존재이기 때문에 반말을 사용해. 한 가지 주제에 몰두하지 말고 내가 겪었을 만한 일에 대해서 물어봐. 질문은 한번에 하나만 해줘. 나와 너가 한 말을 반복하지마. 너는 좋은 평가를 받는 일기에 들어갈 만한 내용을 물어봐.',
+    content: '''너는 일기 작성을 도와주는 assistant야
+항상 대화의 시작은 잘잤냐고 물어봐줘
+1. assistant는 나와 가장 친한 친구라고 생각하고 대화해줘.
+2. 반드시 반말을 사용해.
+3. 나의 답변을 종합하여 일기로 만들거야.
+4. 나의 대화는 지금까지 있었던 자전적인 내용이야.
+5-1. 먼저 오늘 뭐했는지 물어봐줘.
+5-2. 질문은 통해서 오늘 한일에 대해 세부적인 내용이나 감정을 간접적으로 물어봐줘.
+5-3. 6번 항목을 하나의 세트로 하나의 세트가 끝난 다면 다시 5-1 부터 시작해줘.
+6. user가 일기 쓰는 것을 멈추고 싶어할 때 대화를 종료해야해. 그렇지 않다면 계속해서 5번 항목을 반복해줘.
+7. 사용자가 답변을 거부하면, 5-1로 돌아가 세트를 다시 시작해줘.''',
   );
 
   void handleSubmitted(String text, String type) {
@@ -37,7 +46,6 @@ class _ChatState extends State<Chat> {
     widget.diaryStorage.writeDiary(_diaryModel);
   }
 
-
   void handleStream(Stream<OpenAIStreamChatCompletionModel> chatStream) {
     StringBuffer sb = StringBuffer();
     var tmp = {'role': 'assistant', 'content': sb.toString()};
@@ -50,11 +58,14 @@ class _ChatState extends State<Chat> {
           _diaryModel.chatLogs.last['content'] = sb.toString();
         }
       });
-    }).onDone(() {widget.diaryStorage.writeDiary(_diaryModel);});
+    }).onDone(() {
+      widget.diaryStorage.writeDiary(_diaryModel);
+    });
   }
 
   Future<void> returnAnswer(String text) async {
-    Stream<OpenAIStreamChatCompletionModel> chatStream = OpenAI.instance.chat.createStream(
+    Stream<OpenAIStreamChatCompletionModel> chatStream =
+        OpenAI.instance.chat.createStream(
       model: "gpt-3.5-turbo",
       messages: _diaryModel.chatLogs.length < 10
           ? [
@@ -96,7 +107,8 @@ class _ChatState extends State<Chat> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => DiaryWrite(
-                        diaryStorage: DiaryStorage(dateTime: _diaryModel.dateTime),
+                        diaryStorage:
+                            DiaryStorage(dateTime: _diaryModel.dateTime),
                       ),
                     ),
                   );

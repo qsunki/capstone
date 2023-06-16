@@ -15,7 +15,7 @@ class ChatWithMe extends StatefulWidget {
 
 class _ChatWithMeState extends State<ChatWithMe> {
   final HttpLink httpLink =
-      HttpLink('https://my-test-db-yr9cmy7h.weaviate.network/v1/graphql');
+      HttpLink('https://my-capstone-f9fj7zjf.weaviate.network/v1/graphql');
   late GraphQLClient client =
       GraphQLClient(link: httpLink, cache: GraphQLCache());
   final TextEditingController _textController = TextEditingController();
