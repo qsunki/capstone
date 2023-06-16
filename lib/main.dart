@@ -6,6 +6,7 @@ import 'package:flutter_openai/chatWithMe.dart';
 import 'package:flutter_openai/diary_storage.dart';
 
 import 'calendar.dart';
+import 'notification.dart';
 import 'setting.dart';
 import 'lists.dart';
 import 'env/env.dart';
@@ -14,8 +15,16 @@ void main() {
   OpenAI.apiKey = Env.apiKey;
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   runApp(const MyApp());
+  // DateTime today = DateTime.now();
+  // String timeStr = "${today.hour}";
+  // String minStr = "${today.minute}";
 
-
+  // DateTime now = DateTime.now();
+  // String minStr = now.minute.toString().padLeft(2, '0'); // 현재 분을 문자열로 가져옴
+  //
+  // if (minStr == '14') {
+  //       FlutterLocalNotification.showNotification();
+  // }
 }
 
 class MyApp extends StatelessWidget {
@@ -78,6 +87,36 @@ class _HomeState extends State<Home> {
       _selectedIndex = index;
     });
   }
+  // @override
+  // void initState() {
+  //   // 초기화
+  //   FlutterLocalNotification.init();
+  //
+  //   // 3초 후 권한 요청
+  //   Future.delayed(const Duration(seconds: 3),
+  //       FlutterLocalNotification.requestNotificationPermission());
+  //   super.initState();
+  // }
+  @override
+  void initState() {
+      // 초기화
+      FlutterLocalNotification.init();
+
+      // 3초 후 권한 요청
+      Future.delayed(const Duration(seconds: 3),
+          FlutterLocalNotification.requestNotificationPermission());
+      super.initState();
+  }
+  void checkNotificationTime() {
+    Duration duration = const Duration(minutes: 1);
+    Future.delayed(duration, () {
+      FlutterLocalNotification.showNotification();
+      checkNotificationTime(); // 재귀적으로 1분마다 호출
+    });
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +142,7 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blue.shade100,
+          // onPressed:  () => FlutterLocalNotification.showNotification(),
           onPressed: () {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => ChatWithMe()));
@@ -123,3 +163,4 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
